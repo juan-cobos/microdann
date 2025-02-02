@@ -61,12 +61,11 @@ class DANN(Module):
 
     def __call__(self, x):
         logits = self.out_layer([s(x) for s in self.somas])
-        probs = [math.exp(xj.data)/sum([math.exp(xi.data) for xi in logits]) for xj in logits] # Uses .data to not mesh up with grads
+        probs = [xj.exp()/sum([xi.exp() for xi in logits]) for xj in logits]
         return probs
 
     def parameters(self):
-        return [p for s in self.somas for p in s.parameters()] + self.out_layer.parameters   
+        return [p for s in self.somas for p in s.parameters()] + self.out_layer.parameters()
 
     def __repr__(self):
         return f"DANN([{len(self.cw)})"
-
